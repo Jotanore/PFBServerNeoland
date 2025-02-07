@@ -7,8 +7,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tailwind": "npx tailwindcss -i ./src/css/styles.css -o ./src/css/output.css --watch",
-    "static-server" : "node --env-file=.env --watch server/server.statics.js",
-    "api-server" : "node --env-file=.env --watch server/server.api.js"
+    "static-server": "node --env-file=.env --watch server/server.statics.js",
+    "api-server": "node --env-file=.env --watch server/server.api.js",
+    "express-server": "node --env-file=.env --watch server/server.express.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,7 @@
   "homepage": "https://github.com/Jotanore/PFBNeoland#readme",
   "devDependencies": {
     "@eslint/js": "^9.19.0",
+    "@types/express": "^5.0.0",
     "eslint": "^9.19.0",
     "globals": "^15.14.0",
     "lint-staged": "^15.4.3",
@@ -32,6 +34,7 @@
     "typescript-eslint": "^8.22.0"
   },
   "dependencies": {
+    "express": "^4.21.2",
     "leaflet": "^1.9.4"
   }
 }
