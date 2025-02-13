@@ -1,9 +1,8 @@
 [
     {
-        "id": "circuit_1",
         "name": "Big Karting Indoor",
-        "distance": "5",
         "location": {
+                        "province": "Álava",
                         "latitude": "42.912124", 
                         "longitude": "-2.712425"
                      },
@@ -21,10 +20,9 @@
 
     },
     {
-        "id": "circuit_2",
         "name": "Logroño Karting Indoor",
-        "distance": "55",
         "location": {
+            "province": "Logroño",
             "latitude": "42.485641", 
             "longitude": "-2.487524"
          } ,
@@ -41,10 +39,9 @@
         "map": "imgs/kotar.JPG"
     },
     {
-        "id": "circuit_3",
         "name": "Circuito Kotarr Burgos",
-        "distance": "95",
         "location":{
+            "province": "Burgos",
             "latitude": "41.791225", 
             "longitude": "-3.583966"
          },
@@ -61,10 +58,9 @@
         "map": "imgs/kotar.JPG"
     },
     {
-        "id": "circuit_4",
         "name": "Karting Castroponce",
-        "distance": "155",
         "location": {
+            "province": "León",
             "latitude": "42.153641", 
             "longitude": "-5.763708"
          },
@@ -81,10 +77,9 @@
         "map": "imgs/kotar.JPG"
     },
     {
-        "id": "circuit_5",
         "name": "Circuito y Museo Fernando Alonso",
-        "distance": "155",
         "location": {
+            "province": "Asturias",
             "latitude": "43.429136",
             "longitude": "-5.831937"
          },
@@ -101,10 +96,9 @@
         "map": "imgs/kotar.JPG"
     },
     {
-        "id": "circuit_6",
         "name": "Karting Valladolid",
-        "distance": "255",
         "location": {
+            "province": "Valladolid",
             "latitude": "41.600783", 
             "longitude": "-4.693809"
          },
