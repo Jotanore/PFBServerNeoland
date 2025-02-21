@@ -92,9 +92,87 @@ app.post('/api/create/event', requireAuth, async (req, res) => {
     // });
 })
 
+app.post('/api/join/event/:eventid', requireAuth, async (req, res) => {
+
+    const eventid = req.params.eventid;
+    const userId = req.body.user_id;
+    console.log(eventid,userId)
+
+
+        const event = await db.events.getById({ _id: new ObjectId(eventid) }); // Busca el evento en la DB
+
+        // Verificar si el usuario ya está en la lista de participantes
+        if (!event.participants.includes(userId)) {
+            event.participants.push(userId); // Agregar el usuario
+        } else {
+            return res.status(400).json({ message: "Ya estás inscrito en este evento" });
+        }
+
+        // Guardar el evento actualizado
+        await db.events.update( eventid, { participants: event.participants  });
+
+        res.json({ message: "Usuario agregado al evento", event });
+
+})
+
+app.post('/api/forfeit/event/:eventid', requireAuth, async (req, res) => {
+
+    const eventid = req.params.eventid;
+    const userId = req.body.user_id;
+    console.log(eventid,userId)
+    const event = await db.events.getById({ _id: new ObjectId(eventid) });
+    const update = await db.events.deleteParticipant(eventid, userId)
+    res.json( { message: "Usuario fuera del evento", event })  
+})
+
+
 
 app.get('/api/read/events', async (req, res) => {
-    res.json(await db.events.get())
+
+    let query = {};
+
+    if(req.headers.filters){
+        const filters = JSON.parse(req.headers.filters)
+
+        if(filters.circuit && filters.circuit !== 'all'){
+            query.location_id = filters.circuit
+        }
+
+        if (filters.minDate && filters.maxDate) {
+            query.$expr = {
+                $and: [
+                    { $gte: [{ $toDate: "$date" }, new Date(filters.minDate)] },
+                    { $lte: [{ $toDate: "$date" }, new Date(filters.maxDate)] }
+                ]
+            };
+        }
+
+        if (!filters.minDate && filters.maxDate) {
+            const today = Date.now()
+            query.$expr = {
+                $and: [
+                    { $gte: [{ $toDate: "$date" }, today] },
+                    { $lte: [{ $toDate: "$date" }, new Date(filters.maxDate)] }
+                ]
+            };
+        }
+
+        if (filters.minDate && !filters.maxDate) {
+            query.$expr = {
+                $and: [
+                    { $gte: [{ $toDate: "$date" }, new Date(filters.minDate)] }
+                    
+                ]
+            };
+        }
+        
+
+
+    }
+
+    res.json(await db.events.get(query))
+
+
     // crud.read(EVENTS_URL, (data) => {
     //     res.json(data)
     //   });
@@ -103,6 +181,14 @@ app.get('/api/read/events', async (req, res) => {
 app.get('/api/read/events/:userid', async (req, res) => {
     const userId = req.params.userid
     res.json(await db.events.get({user_id: userId}))
+    // crud.read(EVENTS_URL, (data) => {
+    //     res.json(data)
+    //   });
+}); 
+
+app.get('/api/read/event/:id', async (req, res) => {
+    const _id = req.params.id
+    res.json((await db.events.get({_id: new ObjectId(_id)}))[0])
     // crud.read(EVENTS_URL, (data) => {
     //     res.json(data)
     //   });
@@ -179,6 +265,23 @@ app.get('/api/read/racelines', async (req, res) => {
 app.get('/api/read/racelines/:userid', async (req, res) => {
     const userId = req.params.userid
     res.json(await db.raceLines.get({user_id: userId}))
+    // crud.read(ARTICLES_URL, (data) => {
+    //     res.json(data)
+    //   });
+});
+
+//LAPTIME===========================
+
+
+app.post('/api/create/laptime', requireAuth, async (req, res) => {
+    res.json(await db.lapTimes.create(req.body))
+    // crud.create(EVENTS_URL, req.body, (data) => {
+    //     res.json(data)
+    // });
+})
+
+app.get('/api/read/laptimes', async (req, res) => {
+    res.json(await db.lapTimes.get())
     // crud.read(ARTICLES_URL, (data) => {
     //     res.json(data)
     //   });

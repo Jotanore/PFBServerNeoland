@@ -16,6 +16,9 @@ export const db = {
     events: {
         create: createEvent,
         get: getEvents,
+        getById: getEventById,
+        deleteParticipant: updatePopParticipantFromArray,
+        update: updateEvent,
         delete: deleteEvent
     },
     market: {
@@ -26,7 +29,12 @@ export const db = {
     raceLines:{
         create: createRaceLine,
         get: getRaceLines
+    },
+    lapTimes:{
+        create: createLapTime,
+        get: getLapTimes
     }
+
 }
 
 /*=================================USERS===========================================*/
@@ -103,6 +111,32 @@ async function getEvents(filter) {
     return await eventCollection.find(filter).toArray();
 }
 
+async function getEventById(filter) {
+    const client = new MongoClient(URI);
+    const karthubDB = client.db('karthub');
+    const eventCollection = karthubDB.collection('events');
+    return await eventCollection.findOne(filter)
+}
+
+async function updateEvent(id, updates) {
+    const client = new MongoClient(URI);
+    const karthubDB = client.db('karthub');
+    const eventCollection = karthubDB.collection('events');
+    const returnValue = await eventCollection.updateOne({ _id: new ObjectId(id) }, { $set: updates });
+    console.log('db updateEvent', returnValue, updates)
+    return returnValue
+  }
+
+  async function updatePopParticipantFromArray(id, user_id) {
+    const client = new MongoClient(URI);
+    const karthubDB = client.db('karthub');
+    const eventCollection = karthubDB.collection('events');
+    const returnValue = await eventCollection.updateOne({ _id: new ObjectId(id) }, { $pull: { participants: user_id } });
+    console.log('db updateArrayEvent', returnValue, user_id)
+    return returnValue
+  }
+
+
 /**
  * Deletes an article from the 'events' collection in the 'karthub' database.
  *
@@ -178,4 +212,22 @@ async function getRaceLines(filter) {
     const karthubDB = client.db('karthub');
     const raceLineCollection = karthubDB.collection('racelines');
     return await raceLineCollection.find(filter).toArray();
+}
+
+//=================================LAPTIMES========================
+
+async function createLapTime(lapTime) {
+    const client = new MongoClient(URI);
+    const karthubDB = client.db('karthub');
+    const lapTimeCollection = karthubDB.collection('laptimes');
+    const returnValue = await lapTimeCollection.insertOne(lapTime);
+    console.log('db createlapTime', returnValue, lapTime._id)
+    return lapTime
+}
+
+async function getLapTimes(filter) {
+    const client = new MongoClient(URI);
+    const karthubDB = client.db('karthub');
+    const lapTimeCollection = karthubDB.collection('laptimes');
+    return await lapTimeCollection.find(filter).toArray();
 }
