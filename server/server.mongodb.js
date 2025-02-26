@@ -11,7 +11,8 @@ export const db = {
 
     },
     circuits: {
-        get: getCircuits
+        get: getCircuits,
+        getLocation: getCircuitLocation
     },
     events: {
         create: createEvent,
@@ -33,6 +34,11 @@ export const db = {
     lapTimes:{
         create: createLapTime,
         get: getLapTimes
+    },
+    messages:{
+      create: createMessage,
+      get: getMessages,
+      update: updateMessage
     }
 
 }
@@ -93,6 +99,13 @@ async function getCircuits(filter) {
     return await circuitCollection.find(filter).toArray();
   }
 
+
+  async function getCircuitLocation(filter) {
+    const client = new MongoClient(URI);
+    const karthubDB = client.db('karthub');
+    const circuitCollection = karthubDB.collection('circuits');
+    return await circuitCollection.find(filter, { projection: { location: 1, _id: 1 } }).toArray();
+  }
 /*=================================EVENTS===========================================*/
 
 async function createEvent(event) {
@@ -230,4 +243,32 @@ async function getLapTimes(filter) {
     const karthubDB = client.db('karthub');
     const lapTimeCollection = karthubDB.collection('laptimes');
     return await lapTimeCollection.find(filter).toArray();
+}
+
+//=================================MESSAGES========================
+
+
+async function createMessage(message) {
+  const client = new MongoClient(URI);
+  const karthubDB = client.db('karthub');
+  const messagesCollection = karthubDB.collection('messages');
+  const returnValue = await messagesCollection.insertOne(message);
+  console.log('db createMessage', returnValue, message._id)
+  return message
+}
+
+async function getMessages(filter) {
+  const client = new MongoClient(URI);
+  const karthubDB = client.db('karthub');
+  const messagesCollection = karthubDB.collection('messages');
+  return await messagesCollection.find(filter).toArray();
+}
+
+async function updateMessage(id, updates) {
+  const client = new MongoClient(URI);
+  const karthubDB = client.db('karthub');
+  const messagesCollection = karthubDB.collection('messages');
+  const returnValue = await messagesCollection.updateOne({ _id: new ObjectId(id) }, { $set: updates });
+  console.log('db updateMessage', returnValue, updates)
+  return returnValue
 }
