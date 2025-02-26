@@ -69,8 +69,52 @@ app.post('/api/login', async (req, res) => {
 
 
 //CIRCUITS=================
+
 app.get('/api/read/circuits', async (req, res) => {
-    res.json(await db.circuits.get())
+
+    let query = [];
+    let filter = undefined
+
+    if(req.headers.filters){
+        const filters = JSON.parse(req.headers.filters)
+
+        const circuitLocation = await db.circuits.getLocation()
+
+        circuitLocation.forEach(function (circuit){
+            const circuitCoords = [
+                Number(circuit.location.latitude), 
+                Number(circuit.location.longitude)
+            ]
+
+            const userCoords = [
+                Number(filters.userCoords[0]),
+                Number(filters.userCoords[1])
+            ]
+
+            const R = 6371; 
+            // Destructure coords
+            // const {latitude, longitude} = coordsObject
+            // Does math
+            const dLat = (circuitCoords[0] - userCoords[0]) * Math.PI / 180;
+            const dLon = (circuitCoords[1] - userCoords[1]) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(userCoords[0] * Math.PI / 180) * Math.cos(circuitCoords[0] * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            // Stores the distance fixing to 1 decimal
+            const d = Math.round(R * c)
+
+            if (Number(d) < Number(filters.distance)){
+                
+                query.push(circuit._id)
+            }  
+
+        })
+
+        filter = { _id: {$in: query}}
+    }
+    res.json(await db.circuits.get(filter))
+
     // crud.read(CIRCUITS_URL, (data) => {
     //     res.json(data)
     //   });
@@ -100,6 +144,10 @@ app.post('/api/join/event/:eventid', requireAuth, async (req, res) => {
 
 
         const event = await db.events.getById({ _id: new ObjectId(eventid) }); // Busca el evento en la DB
+
+        if (event.participants.length >= Number(event.maxParticipants)){
+            return res.status(400).json({ message: "Este evento esta completo" });
+        }
 
         // Verificar si el usuario ya está en la lista de participantes
         if (!event.participants.includes(userId)) {
@@ -262,6 +310,14 @@ app.get('/api/read/racelines', async (req, res) => {
     //   });
 });
 
+app.get('/api/read/raceline/:id', async (req, res) => {
+    const id = req.params.id
+    res.json((await db.raceLines.get({_id: new ObjectId(id)}))[0])
+    // crud.read(ARTICLES_URL, (data) => {
+    //     res.json(data)
+    //   });
+});
+
 app.get('/api/read/racelines/:userid', async (req, res) => {
     const userId = req.params.userid
     res.json(await db.raceLines.get({user_id: userId}))
@@ -287,6 +343,38 @@ app.get('/api/read/laptimes', async (req, res) => {
     //   });
 });
 
+//MESSAGES================================
+
+app.post('/api/create/message', requireAuth, async (req, res) => {
+    res.json(await db.messages.create(req.body))
+    // crud.create(EVENTS_URL, req.body, (data) => {
+    //     res.json(data)
+    // });
+})
+
+app.get('/api/read/messages/:userid', async (req, res) => {
+    const userId = req.params.userid
+    res.json(await db.messages.get({
+        $or: [
+            {sender_id: userId},
+            {receiver_id: userId}
+        ]
+    }))
+    // crud.read(USERS_URL, (data) => {
+    //     res.json(data)
+    //   });
+});
+
+app.patch('/api/update/message/:messageid', async (req, res) => {
+    const messageId = req.params.messageid
+    const update = req.body
+    
+    res.json(await db.messages.update(messageId ,update))
+    
+    // crud.read(USERS_URL, (data) => {
+    //     res.json(data)
+    //   });
+});
 //========================================
 
 
