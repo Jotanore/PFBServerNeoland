@@ -8,12 +8,6 @@ import { gooogleOauth2 } from './server.oauth.js';
 const app = express();
 const port = process.env.PORT || 3000;
 
-// const USERS_URL = './server/BBDD/users.json'
-// const CIRCUITS_URL = './server/BBDD/circuits.json'
-// const ARTICLES_URL = './server/BBDD/articles.json'
-// const EVENTS_URL = './server/BBDD/events.json'
-// const FORUM_TOPICS_URL = './server/BBDD/forum.topics.json'
-
 app.use(express.static('../PFBNeoland/src'));
 
 app.use(bodyParser.json({limit: '50mb'}));
@@ -24,30 +18,18 @@ app.use(bodyParser.urlencoded({ extended: true,limit: '50mb' }));
  //USERS============
 app.post('/api/create/user', async (req, res) => {
     res.json(await db.users.create(req.body))
-    // crud.create(USERS_URL, req.body, (data) => {
-    //     res.json(data)
-    //   });
 })
 
 app.get('/api/read/users', async (req, res) => {
     res.json(await db.users.get())
-    // crud.read(USERS_URL, (data) => {
-    //     res.json(data)
-    //   });
 });
 
 app.get('/api/read/user/:id', async (req, res) => {
     res.json((await db.users.get({_id: new ObjectId(req.params.id)}))[0])
-    // crud.read(USERS_URL, (data) => {
-    //     res.json(data)
-    //   });
 });
 
 app.put('/api/update/user/:id', async (req, res) => {
     res.json(await db.users.update(req.params.id, req.body))
-    // crud.update(USERS_URL, req.params.id, req.body, (data) => {
-    //     res.json(data)
-    //   });
 });
 
 app.post('/api/login', async (req, res) => {
@@ -115,25 +97,16 @@ app.get('/api/read/circuits', async (req, res) => {
     }
     res.json(await db.circuits.get(filter))
 
-    // crud.read(CIRCUITS_URL, (data) => {
-    //     res.json(data)
-    //   });
 });
 
 app.get('/api/read/circuit/:id', async (req, res) => {
     res.json((await db.circuits.get({_id: new ObjectId(req.params.id)}))[0])
-    // crud.read(USERS_URL, (data) => {
-    //     res.json(data)
-    //   });
 });
 
 
 //EVENTS=================
 app.post('/api/create/event', requireAuth, async (req, res) => {
     res.json(await db.events.create(req.body))
-    // crud.create(EVENTS_URL, req.body, (data) => {
-    //     res.json(data)
-    // });
 })
 
 app.post('/api/join/event/:eventid', requireAuth, async (req, res) => {
@@ -143,20 +116,17 @@ app.post('/api/join/event/:eventid', requireAuth, async (req, res) => {
     console.log(eventid,userId)
 
 
-        const event = await db.events.getById({ _id: new ObjectId(eventid) }); // Busca el evento en la DB
+        const event = await db.events.getById({ _id: new ObjectId(eventid) }); 
 
         if (event.participants.length >= Number(event.maxParticipants)){
             return res.status(400).json({ message: "Este evento esta completo" });
         }
-
-        // Verificar si el usuario ya está en la lista de participantes
         if (!event.participants.includes(userId)) {
-            event.participants.push(userId); // Agregar el usuario
+            event.participants.push(userId);
         } else {
             return res.status(400).json({ message: "Ya estás inscrito en este evento" });
         }
 
-        // Guardar el evento actualizado
         await db.events.update( eventid, { participants: event.participants  });
 
         res.json({ message: "Usuario agregado al evento", event });
@@ -219,75 +189,50 @@ app.get('/api/read/events', async (req, res) => {
     }
 
     res.json(await db.events.get(query))
-
-
-    // crud.read(EVENTS_URL, (data) => {
-    //     res.json(data)
-    //   });
 }); 
 
 app.get('/api/read/events/:userid', async (req, res) => {
     const userId = req.params.userid
     res.json(await db.events.get({user_id: userId}))
-    // crud.read(EVENTS_URL, (data) => {
-    //     res.json(data)
-    //   });
 }); 
 
 app.get('/api/read/event/:id', async (req, res) => {
     const _id = req.params.id
     res.json((await db.events.get({_id: new ObjectId(_id)}))[0])
-    // crud.read(EVENTS_URL, (data) => {
-    //     res.json(data)
-    //   });
 }); 
 
 app.delete('/api/delete/event/:id', async (req, res) => {
     res.json(await db.events.delete(req.params.id))
-//     crud.delete(EVENTS_URL, req.params.id, (data) => {
-//      res.json(data)
-//    });
  })
 
 //MARKET=================
+
 app.post('/api/create/article', async (req, res) => {
     res.json(await db.market.create(req.body))
-    // crud.create(ARTICLES_URL, req.body, (data) => {
-    //     res.json(data)
-    // });
 })
 
 
 app.get('/api/read/articles', async (req, res) => {
     res.json(await db.market.get())
-    // crud.read(ARTICLES_URL, (data) => {
-    //     res.json(data)
-    //   });
 });
 
 app.get('/api/read/articles/:userid', async (req, res) => {
     const userId = req.params.userid
     res.json(await db.market.get({user_id: userId}))
-    // crud.read(ARTICLES_URL, (data) => {
-    //     res.json(data)
-    //   });
 });
 
 app.delete('/api/delete/article/:id', async (req, res) => {
     res.json(await db.market.delete(req.params.id))
-    //  crud.delete(ARTICLES_URL, req.params.id, (data) => {
-    //   res.json(data)
-    // });
   })
 
 
 //FORUM TODO===(or not, hehe)================
+
 app.get('/api/read/forum-topics', (req, res) => {
     crud.read(FORUM_TOPICS_URL, (data) => {
         res.json(data)
       });
 })
-
 
 
 app.listen(port, () => {
@@ -298,32 +243,21 @@ app.listen(port, () => {
 
 app.post('/api/create/raceline', async (req, res) => {
     res.json(await db.raceLines.create(req.body))
-    // crud.create(ARTICLES_URL, req.body, (data) => {
-    //     res.json(data)
-    // });
 })
 
 app.get('/api/read/racelines', async (req, res) => {
     res.json(await db.raceLines.get())
-    // crud.read(ARTICLES_URL, (data) => {
-    //     res.json(data)
-    //   });
 });
 
 app.get('/api/read/raceline/:id', async (req, res) => {
     const id = req.params.id
     res.json((await db.raceLines.get({_id: new ObjectId(id)}))[0])
-    // crud.read(ARTICLES_URL, (data) => {
-    //     res.json(data)
-    //   });
 });
 
 app.get('/api/read/racelines/:userid', async (req, res) => {
     const userId = req.params.userid
     res.json(await db.raceLines.get({user_id: userId}))
-    // crud.read(ARTICLES_URL, (data) => {
-    //     res.json(data)
-    //   });
+
 });
 
 //LAPTIME===========================
@@ -331,25 +265,71 @@ app.get('/api/read/racelines/:userid', async (req, res) => {
 
 app.post('/api/create/laptime', requireAuth, async (req, res) => {
     res.json(await db.lapTimes.create(req.body))
-    // crud.create(EVENTS_URL, req.body, (data) => {
-    //     res.json(data)
-    // });
 })
 
 app.get('/api/read/laptimes', async (req, res) => {
-    res.json(await db.lapTimes.get())
-    // crud.read(ARTICLES_URL, (data) => {
-    //     res.json(data)
-    //   });
+
+    let query = {};
+
+    if(req.headers.filters){
+        const filters = JSON.parse(req.headers.filters)
+        console.log(filters)
+
+        if(filters.circuit && filters.circuit !== 'all'){
+            query.circuit_id = filters.circuit
+        }
+
+        if (filters.conditions && filters.lapConditions !== '' ) {
+            query.lapCondition = filters.conditions
+        }
+
+        if (filters.kartType && filters.kartType !== '' ) {
+            query.kartType = filters.kartType
+        }
+    }
+
+    if(req.headers.filters){
+        res.json(await db.lapTimes.get(query, { laptime: -1 }))
+    }else{
+        res.json(await db.lapTimes.get(query))
+    }
+    
+
+});
+
+app.get('/api/read/bestlaptimes/:userid', async (req, res) => {
+
+    const userId = req.params.userid
+
+    let query = {};
+
+    query.user_id = userId
+    query.lapCondition = 'Seco'
+    query.kartType = 'Rental'
+
+    const personalLaps = (await db.lapTimes.get(query, { laptime: 1} ))
+
+    let result = new Set(personalLaps.map(a => a.circuit_id));
+
+    const bestLaptimes = []
+
+    for (const circuitId of result) { 
+
+        const bestCircuitLap = await db.lapTimes.get({ circuit_id: circuitId, lapCondition: 'Seco', kartType: 'Rental' }, { laptime: 1 })
+
+        const bestLap = personalLaps.find(lap => lap.circuit_id === circuitId)
+        bestLaptimes.push({...bestLap, delta: (Number(bestLap.laptime) - Number(bestCircuitLap[0].laptime))})
+        
+    }
+    res.json(bestLaptimes)
+
 });
 
 //MESSAGES================================
 
 app.post('/api/create/message', requireAuth, async (req, res) => {
     res.json(await db.messages.create(req.body))
-    // crud.create(EVENTS_URL, req.body, (data) => {
-    //     res.json(data)
-    // });
+
 })
 
 app.get('/api/read/messages/:userid', async (req, res) => {
@@ -360,9 +340,7 @@ app.get('/api/read/messages/:userid', async (req, res) => {
             {receiver_id: userId}
         ]
     }))
-    // crud.read(USERS_URL, (data) => {
-    //     res.json(data)
-    //   });
+
 });
 
 app.patch('/api/update/message/:messageid', async (req, res) => {
@@ -371,9 +349,7 @@ app.patch('/api/update/message/:messageid', async (req, res) => {
     
     res.json(await db.messages.update(messageId ,update))
     
-    // crud.read(USERS_URL, (data) => {
-    //     res.json(data)
-    //   });
+
 });
 //========================================
 
