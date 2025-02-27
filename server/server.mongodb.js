@@ -238,11 +238,16 @@ async function createLapTime(lapTime) {
     return lapTime
 }
 
-async function getLapTimes(filter) {
+async function getLapTimes(filter, direction) {
     const client = new MongoClient(URI);
     const karthubDB = client.db('karthub');
     const lapTimeCollection = karthubDB.collection('laptimes');
-    return await lapTimeCollection.find(filter).toArray();
+    if(direction){
+      return await lapTimeCollection.find(filter).sort(direction).toArray();
+    }else{
+      return await lapTimeCollection.find(filter).toArray();
+    }
+    
 }
 
 //=================================MESSAGES========================
