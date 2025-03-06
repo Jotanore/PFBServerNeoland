@@ -175,5 +175,3 @@ Message = {
 ## Relacion entre componentes
 
 Para las diversas páginas, tenemos un archivos bundle que importa los componentes utilizados en esa página.
-
-Las carpetas acabadas en Lit, son los componentes creados con [Lit Element](https://lit.dev)
