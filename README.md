@@ -34,7 +34,7 @@ La parte Back-end de este proyecto se encuentra aqui: [PFBNeoland](https://githu
 
 ## Dependencias de la aplicación
 
-* Node >= 20.0.0
+* Node
 * Express
 * MongoDB
 * JSDoc
@@ -43,7 +43,7 @@ La parte Back-end de este proyecto se encuentra aqui: [PFBNeoland](https://githu
 * ESLint
 * Lint-Staged
 * StyleLint
-* Netlify (sólo si se va a desplegar en netlify)
+* Netlify
 
 ## Plugings de VS Code recomendados
 
@@ -72,15 +72,11 @@ run express-server
 Acceso desde: [http://127.0.0.1:6431](http://localhost:6431)
 La configuración de los puertos está definida en el archivo .env, no incluído en el repositorio de git.
 
-En lo relativo al interfaz, para la parte pública se aplican estilos responsive en función del tamaño de la pantalla para su uso en distintos dispositivos, con elementos Grid y Flex para esta funcionalidad.
-
-Cada función/componente se ha creado intentando cumplir con los estándares de SOLID.
-
-Existe la validación de tipados por medio de JSDoc en los comentarios, y ESLint tanto en los Git Hooks como apoyo por medio del plugin de VS Code.
+Cada función intenta cumplir con los estándares de SOLID.
 
 ## Documentación
 
-Para generar la documentación de la aplicación se usa [JSDoc](https://jsdoc.app) y se guarda en la carpeta ```out```. Para verla puedes ejecutar el comando ```npm run build:docs```.
+Para generar la documentación de la aplicación se usa [JSDoc](https://jsdoc.app) y se guarda en la carpeta ```out```.
 
 ## Modelo de Datos
 
